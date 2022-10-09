@@ -8,8 +8,7 @@ const Service = ({service}) => {
             </figure>
             <div class="card-body items-center text-center">
                 <h2 class="card-title">{service.name}</h2>
-                <p>{service.description}</p>
-                
+                <p>{service.description}</p>                
             </div>
         </div>
     );
