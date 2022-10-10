@@ -6,7 +6,7 @@ import About from './Pages/About/About';
 
 function App() {
   return (
-    <div>
+    <div className='max-w-7xl'>
       <Navbar/>
       <Routes>
         <Route path="/" element={<Home />} />
