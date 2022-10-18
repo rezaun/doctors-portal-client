@@ -1,9 +1,10 @@
 import React from 'react';
-import { useSignInWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
+import { useCreateUserWithEmailAndPassword, useSignInWithGoogle, useUpdateProfile } from 'react-firebase-hooks/auth';
 import auth from '../../firebase.init';
 import { useForm } from "react-hook-form";
 import Loading from '../Shared/Loading';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { async } from '@firebase/util';
 
 
 
@@ -11,28 +12,34 @@ const SignUp = () => {
     const [signInWithGoogle, gUser, gloading, gError] = useSignInWithGoogle(auth);
     const { register, formState: { errors }, handleSubmit } = useForm();
     const [
-        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
         user,
         loading,
         error,
-    ] = useSignInWithEmailAndPassword(auth);
+      ] = useCreateUserWithEmailAndPassword(auth);
+      const [updateProfile, updating, updateError] = useUpdateProfile(auth);
+
+      const navigate = useNavigate();
 
     let signInError;
 
     if (loading || gloading) {
         return <Loading></Loading>
     }
-    if (error || gError) {
-        signInError = <p className='text-red-500'><small>{error?.message || gError?.message}</small></p>
+    if (error || gError || updateError) {
+        signInError = <p className='text-red-500'><small>{error?.message || gError?.message || updateError?.message }</small></p>
     }
 
-    if (user || gUser) {
+    if (user || gUser || updating) {
         console.log(user, gUser)
     }
 
-    const onSubmit = (data) => {
+    const onSubmit = async data => {
         console.log(data);
-        signInWithEmailAndPassword(data.email, data.password);
+        await createUserWithEmailAndPassword(data.email, data.password);
+        await updateProfile({ displayName : data.name});
+        console.log('update done');
+        navigate('/appointment');
     }
     return (
         <div className='flex justify-center items-center h-screen'>
